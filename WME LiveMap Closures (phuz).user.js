@@ -5,7 +5,7 @@
 // @include 			https://www.waze.com/*/editor*
 // @include 			https://beta.waze.com/*
 // @exclude				https://www.waze.com/*user/editor*
-// @version 			1.16.7
+// @version 			1.16.9
 // @copyright			2014-2022, pvo11
 // @namespace			https://greasyfork.org/scripts/5144-wme-road-closures
 // @require             https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js

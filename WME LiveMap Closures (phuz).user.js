@@ -1,5 +1,5 @@
 // ==UserScript==
-// @name				WME LiveMap Closures (phuz'd)
+// @name				WME LiveMap Closures (phuz)
 // @description 		Shows road closures (and comments) from Waze Live map in WME
 // @include 			https://www.waze.com/editor*
 // @include 			https://www.waze.com/*/editor*

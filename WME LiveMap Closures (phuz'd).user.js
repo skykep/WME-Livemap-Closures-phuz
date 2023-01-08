@@ -5,7 +5,7 @@
 // @include 			https://www.waze.com/*/editor*
 // @include 			https://beta.waze.com/*
 // @exclude				https://www.waze.com/*user/editor*
-// @version 			1.16.6
+// @version 			1.16.7
 // @copyright			2014-2022, pvo11
 // @namespace			https://greasyfork.org/scripts/5144-wme-road-closures
 // @require             https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js
@@ -184,7 +184,12 @@ function requestClosures() {
                 success: function (json) {
                     if (json.error != undefined) {
                     } else {
+                        if (W.map.getLayersByName('rtcCommentLayer').length == 1) {
+                            W.map.removeLayer(rtcCommentLayer);
+                        }
                         closuresLayer.destroyFeatures();
+                        rtcCommentLayer = new OpenLayers.Layer.Markers('rtcCommentLayer');
+                        W.map.addLayer(rtcCommentLayer);
                         var ids = [];
                         if ("undefined" !== typeof (json.jams)) {
                             var numjams = json.jams.length;
@@ -281,7 +286,6 @@ function liveMapClosures_init() {
 
 }
 
-
 function liveMapClosures_bootstrap() {
     uWaze = unsafeWindow.W;
     uOpenLayers = unsafeWindow.OpenLayers;
@@ -291,8 +295,6 @@ function liveMapClosures_bootstrap() {
     } else {
         epsg900913 = new uOpenLayers.Projection("EPSG:900913");
         epsg4326 = new uOpenLayers.Projection("EPSG:4326");
-        rtcCommentLayer = new OpenLayers.Layer.Markers('rtcCommentLayer');
-        W.map.addLayer(rtcCommentLayer);
         if (!OpenLayers.Icon) {
             installIcon();
         }
@@ -316,7 +318,7 @@ function drawCommentMarker(title, comments, datetime, x, y) {
     newMarker.timestamp = datetime;
     newMarker.location = lonLat;
     newMarker.events.register('click', newMarker, popup);
-    eval("rtcCommentLayer.addMarker(newMarker)");
+    rtcCommentLayer.addMarker(newMarker);
 }
 
 //Generate the Popup

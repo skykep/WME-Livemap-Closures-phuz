@@ -5,7 +5,7 @@
 // @include 			https://www.waze.com/*/editor*
 // @include 			https://beta.waze.com/*
 // @exclude				https://www.waze.com/*user/editor*
-// @version 			1.16.9
+// @version 			1.16.10
 // @namespace			https://greasyfork.org/en/users/668704-phuz
 // @require             https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js
 // @grant               GM_info

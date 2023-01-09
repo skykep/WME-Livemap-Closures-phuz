@@ -5,7 +5,7 @@
 // @include 			https://www.waze.com/*/editor*
 // @include 			https://beta.waze.com/*
 // @exclude				https://www.waze.com/*user/editor*
-// @version 			1.16.10
+// @version 			1.16.11
 // @namespace			https://greasyfork.org/en/users/668704-phuz
 // @require             https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js
 // @grant               GM_info
@@ -183,8 +183,8 @@ function requestClosures() {
                 success: function (json) {
                     if (json.error != undefined) {
                     } else {
-                        if (W.map.getLayersByName('rtcCommentLayer').length == 1) {
-                            W.map.removeLayer(rtcCommentLayer);
+                        if (W.map.getLayersByName('rtcCommentLayer').length >= 1) {
+                            //W.map.removeLayer(rtcCommentLayer);
                         }
                         closuresLayer.destroyFeatures();
                         rtcCommentLayer = new OpenLayers.Layer.Markers('rtcCommentLayer');
@@ -242,6 +242,7 @@ function liveMapClosures_init() {
         uniqueName: "__DrawLiveMapClosures"
     });
     uWaze.map.addLayer(closuresLayer);
+    W.map.getOLMap().setLayerIndex(closuresLayer, 10);
     if (localStorage.DrawLiveMapClosures) {
         closuresLayer.setVisibility(localStorage.DrawLiveMapClosures == "true");
     } else {

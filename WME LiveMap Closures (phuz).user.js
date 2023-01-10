@@ -5,7 +5,7 @@
 // @include 			https://www.waze.com/*/editor*
 // @include 			https://beta.waze.com/*
 // @exclude				https://www.waze.com/*user/editor*
-// @version 			1.16.12
+// @version 			1.16.13
 // @namespace			https://greasyfork.org/en/users/668704-phuz
 // @require             https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js
 // @grant               GM_info
@@ -28,6 +28,10 @@ display: block;
 }
 
 table.rtcCommentTable td {
+    padding: 2px;
+}
+
+table.rtcCommentTable th {
     padding: 2px;
 }
 
@@ -190,7 +194,10 @@ function requestClosures() {
                         var ids = [];
                         if ("undefined" !== typeof (json.jams)) {
                             var numjams = json.jams.length;
-                            var numAlerts = json.alerts.length;
+                            var numAlerts = 0;
+                            if (json.alerts) {
+                                numAlerts = json.alerts.length; 
+                            }
                             for (var i = 0; i < numjams; i++) {
                                 var jam = json.jams[i];
                                 if (jam.delay === -1) {
@@ -202,10 +209,12 @@ function requestClosures() {
                                                 let hasText = false;
                                                 let comment = []
                                                 let timestamp = [];
+                                                let user = [];
                                                 for (var k = 0; k < alerts.comments.length; k++) {
                                                     if (alerts.comments[k].isThumbsUp == false) {
                                                         comment.push(alerts.comments[k].text);
                                                         timestamp.push(alerts.comments[k].reportMillis);
+                                                        user.push(alerts.comments[k].reportBy);
                                                         hasText = true;
                                                         //build the comment history
                                                     }
@@ -213,7 +222,7 @@ function requestClosures() {
                                                 if (hasText) {
                                                     let x = jam.line[Math.trunc(jam.line.length / 2)].x;
                                                     let y = jam.line[Math.trunc(jam.line.length / 2)].y;
-                                                    drawCommentMarker(alerts.reportDescription, comment, timestamp, x, y);
+                                                    drawCommentMarker(alerts.reportDescription, comment, timestamp, x, y, user);
                                                 }
                                             }
                                         }
@@ -304,7 +313,7 @@ function liveMapClosures_bootstrap() {
 }
 
 //Generate the Advisory markers
-function drawCommentMarker(title, comments, datetime, x, y) {
+function drawCommentMarker(title, comments, datetime, x, y, user) {
     var commentIcon = 'data:image/gif;base64,R0lGODlhHgAaAPcAAP////7+/v39/fz8/Pv7+/r6+vn5+fj4+Pf39/b29vX19fT09PPz8/Ly8vHx8fDw8O/v7+zs7Ovr6+rq6unp6efn5+bm5uXl5eTk5OPj497e3t3d3dvb29ra2tXV1dTU1NHR0dDQ0M7OzszMzMvLy8jIyMbGxsTExMPDw8LCwsHBwb6+vry8vLq6urm5ubi4uLa2trS0tKysrKurq6ioqKenp6ampqSkpKOjo6KioqGhoZ+fn56enpqampiYmJWVlZOTk5CQkI6Ojo2NjYqKioaGhoWFhYSEhIODg4GBgX9/f3x8fHp6enZ2dnV1dXNzc3JycnFxcXBwcGxsbGtra2pqamlpaWhoaGdnZ2VlZWNjY2JiYmBgYF9fX15eXltbW1lZWVhYWFZWVlNTU1JSUlFRUVBQUE9PT05OTk1NTUhISEZGRkNDQ0JCQkBAQD4+Pj09PTw8PDs7Ozo6Ojc3NzY2NjU1NTQ0NDMzMy8vLy4uLi0tLSwsLCoqKikpKSgoKCcnJyUlJSQkJCEhIR8fHx4eHhsbGxgYGBYWFhUVFRQUFBMTExERERAQEA4ODgwMDAgICAUFBQQEBAMDAwICAgEBAQAAAP///wAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACH5BAEAAJcALAAAAAAeABoAAAj/AC8JHEhQxI0jVsiUqTJERgiCECMSlDMp0BovVLKEgWOoEhuJIC8xopOkBAUDAFICUJCBhRRAhEIO9LPnBgSVOHNWEGLoTchJWC7kHJrTA5pGEictQUm0aUoHVR5BJIQlgNOrABKM6UOwUASsWDEwGvgIB1iwPKTmODThLNYIimhEKZOTQo8YVgEcqLGjgUoVPjTk7DKFJE4FYixZmpFSiGInBACokGRpjgWcPdQQ+oETAyXFV1KuUfwHAYAiii2dwDnjzhkpOA1AsbRoRUobkywFsQpCkCUwD3DqcGNETgGcCU58wDnChACVHFLcxCkli4tIHdxeXQAIyKU8TLQ7eIVBaaAlEuKHMrjTZOCYPRLS43SSCKKdMxvyah9ApJJEQGUcp10GVvgnUR1NPAXWAzjowUdIh6DwAhV3cJHDBw08l5IBFrSARBxIhVSFI3FUksYlYCACCR5mbLHFF20MMgkdMglkiR5KSPSEFlpcUSNENvwo5CUBAQA7';
     var size = new OpenLayers.Size(30, 30);
     var offset = new OpenLayers.Pixel(size.w * 0.5, -size.h);
@@ -316,6 +325,7 @@ function drawCommentMarker(title, comments, datetime, x, y) {
     newMarker.title = title;
     newMarker.comments = comments;
     newMarker.timestamp = datetime;
+    newMarker.user = user;
     newMarker.location = lonLat;
     newMarker.events.register('click', newMarker, popup);
     rtcCommentLayer.addMarker(newMarker);
@@ -329,10 +339,10 @@ function popup(evt) {
     W.map.moveTo(this.location);
     let htmlString = '<div id="rtcCommentContainer" style="max-width:500px;margin: 1;text-align: center;padding: 5px;z-index: 1100">' +
         '<a href="#close" id="gmCloseDlgBtn" title="Close" class="modalclose" style="color:#FF0000;">X</a>' +
-        '<table border=1 class="rtcCommentTable"><tr><td colspan=2><div id="mydivheader" style="min-height: 20px;">' + this.title + '</div>'
-    htmlString += '<hr class="myhrline"/></td></tr>';
+        '<table border=1 class="rtcCommentTable"><tr><td colspan=3><div id="mydivheader" style="min-height: 20px;">' + this.title + '</div></td></tr>'
+    htmlString += '<tr><th>Date / Time</th><th>Comment</th><th>By</th>';
     for (let i = 0; i < this.comments.length; i++) {
-        htmlString += '<tr><td width=200 align=right>' + moment(new Date(this.timestamp[i])).format('LLL') + '</td><td align=left>' + this.comments[i] + '</td></tr>';
+        htmlString += '<tr><td width=200 align=right>' + moment(new Date(this.timestamp[i])).format('LLL') + '</td><td align=left>' + this.comments[i] + '</td><td align=center><a href="https://www.waze.com/user/editor/' + this.user[i] + '">' + this.user[i] + '</a></td></tr>';
     }
     htmlString += '</table></div>'
     //moment(new Date(this.timestamp[i])).format('LLL')

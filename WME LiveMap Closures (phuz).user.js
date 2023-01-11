@@ -5,7 +5,7 @@
 // @include 			https://www.waze.com/*/editor*
 // @include 			https://beta.waze.com/*
 // @exclude				https://www.waze.com/*user/editor*
-// @version 			1.16.13
+// @version 			1.16.14
 // @namespace			https://greasyfork.org/en/users/668704-phuz
 // @require             https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js
 // @grant               GM_info
@@ -196,7 +196,7 @@ function requestClosures() {
                             var numjams = json.jams.length;
                             var numAlerts = 0;
                             if (json.alerts) {
-                                numAlerts = json.alerts.length; 
+                                numAlerts = json.alerts.length;
                             }
                             for (var i = 0; i < numjams; i++) {
                                 var jam = json.jams[i];
@@ -337,12 +337,18 @@ function popup(evt) {
     $("#rtcCommentContainer").hide();
     var popupHTML;
     W.map.moveTo(this.location);
+    let user;
     let htmlString = '<div id="rtcCommentContainer" style="max-width:500px;margin: 1;text-align: center;padding: 5px;z-index: 1100">' +
         '<a href="#close" id="gmCloseDlgBtn" title="Close" class="modalclose" style="color:#FF0000;">X</a>' +
         '<table border=1 class="rtcCommentTable"><tr><td colspan=3><div id="mydivheader" style="min-height: 20px;">' + this.title + '</div></td></tr>'
     htmlString += '<tr><th>Date / Time</th><th>Comment</th><th>By</th>';
     for (let i = 0; i < this.comments.length; i++) {
-        htmlString += '<tr><td width=200 align=right>' + moment(new Date(this.timestamp[i])).format('LLL') + '</td><td align=left>' + this.comments[i] + '</td><td align=center><a href="https://www.waze.com/user/editor/' + this.user[i] + '">' + this.user[i] + '</a></td></tr>';
+        if (this.user[i]) {
+            user = '<a href="https://www.waze.com/user/editor/' + this.user[i] + '">' + this.user[i] + '</a>';
+        } else {
+            user = "(Unknown)";
+        }
+        htmlString += '<tr><td width=200 align=right>' + moment(new Date(this.timestamp[i])).format('LLL') + '</td><td align=left>' + this.comments[i] + '</td><td align=center>' + user + '</td></tr>';
     }
     htmlString += '</table></div>'
     //moment(new Date(this.timestamp[i])).format('LLL')

@@ -5,7 +5,7 @@
 // @include 			https://www.waze.com/*/editor*
 // @include 			https://beta.waze.com/*
 // @exclude				https://www.waze.com/*user/editor*
-// @version 			1.16.16
+// @version 			1.16.17
 // @namespace			https://greasyfork.org/en/users/668704-phuz
 // @require             https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js
 // @grant               GM_info
@@ -354,7 +354,7 @@ function popup(evt) {
     htmlString += '<tr><th>Date / Time</th><th>Comment</th><th>By</th>';
     for (let i = 0; i < this.comments.length; i++) {
         if (this.user[i]) {
-            user = '<a href="https://www.waze.com/user/editor/' + this.user[i] + '">' + this.user[i] + '</a>';
+            user = '<a target="_blank" href="https://www.waze.com/user/editor/' + this.user[i] + '">' + this.user[i] + '</a>';
         } else {
             user = "<font color=red>Unknown</font>";
         }
